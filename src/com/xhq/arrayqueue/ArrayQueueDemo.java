@@ -1,20 +1,18 @@
-package com.xhq.ArrayQueue;
-
+package com.xhq.arrayqueue;
 
 import java.util.Scanner;
 
-public class CircleArrayQueueDemo {
+public class ArrayQueueDemo {
     public static void main(String[] args) {
-        //  测试环形队列
+        //  测试队列
         //创建一个队列
-        CircleArrayQueue circleArrayQueue = new CircleArrayQueue(4);
+        ArrayQueue arrayQueue = new ArrayQueue(3);
 
         char key = ' ';//接受用户输入
 
         Scanner scanner = new Scanner(System.in);
         boolean loop = true;
 
-        System.out.println("环形队列测试");
         //输出一个菜单
         while(loop){
             System.out.println("s(show):显示队列");
@@ -27,16 +25,16 @@ public class CircleArrayQueueDemo {
 
             switch(key){
                 case 's':
-                    circleArrayQueue.showQueue();
+                    arrayQueue.showQueue();
                     break;
                 case 'a':
                     System.out.println("请输入一个数");
                     int value = scanner.nextInt();
-                    circleArrayQueue.addQueue(value);
+                    arrayQueue.addQueue(value);
                     break;
                 case 'g':
                     try{
-                        int num = circleArrayQueue.getQueue();
+                        int num = arrayQueue.getQueue();
                         System.out.println("取出的数是：" + num);
                     }catch(Exception e){
                         System.out.println(e.getMessage());
@@ -44,7 +42,7 @@ public class CircleArrayQueueDemo {
 
                     break;
                 case 'h':
-                    circleArrayQueue.headQueue();
+                    arrayQueue.headQueue();
                     break;
                 case 'e':
                     scanner.close();
@@ -59,21 +57,24 @@ public class CircleArrayQueueDemo {
     }
 }
 
-class CircleArrayQueue{
+//非环形队列，数组只能使用一次，不能复用
+class ArrayQueue{
     private int maxSize;//最大容量
-    private int front;//队列头,指向队列第一个元素的位置
-    private int rear;//队列尾，指向最后一个元素的后一个位置
+    private int front;//队列头
+    private int rear;//队列尾
     private int[] arr;//存放队列的数组
 
     //创建队列的构造器
-    public CircleArrayQueue(int maxSize){
+    public ArrayQueue(int maxSize){
         this.maxSize = maxSize;
+        front = -1;//队列头的前一个位置
+        rear = -1;//队列尾的位置
         arr = new int[maxSize];
     }
 
     //判断队列是否满
     public boolean isFull(){
-        return (rear + 1) % maxSize == front;
+        return rear == maxSize - 1;
     }
 
     //判断队列是否空
@@ -87,8 +88,8 @@ class CircleArrayQueue{
             System.out.println("队列已满，无法添加数据。");
             return;
         }
+        rear++;
         arr[rear] = n;
-        rear = (rear + 1) % maxSize;
     }
 
     //取出队列中的数据，并返回该数据
@@ -96,9 +97,8 @@ class CircleArrayQueue{
         if(isEmpty()){
             throw new RuntimeException("队列为空，无法取出数据");
         }
-        int temp = arr[front];
-        front = (front + 1) % maxSize;
-        return temp;
+        front++;
+        return arr[front];
     }
 
     //显示队列的所有数据
@@ -108,8 +108,8 @@ class CircleArrayQueue{
             return;
         }
 
-        for(int i = front; i < front + size(); i++){
-            System.out.println("arr[" + i % maxSize + "] = " + arr[i % maxSize]);
+        for(int i = front + 1; i < arr.length; i++){
+            System.out.println("arr[" + i + "] = " + arr[i]);
         }
     }
 
@@ -118,10 +118,6 @@ class CircleArrayQueue{
         if(isEmpty()){
             throw new RuntimeException("队列中没有数据");
         }
-        System.out.println("头数据为：" + arr[front]);
-    }
-
-    public int size(){
-        return (rear - front + maxSize) % maxSize;
+        System.out.println("头数据为：" + arr[front + 1]);
     }
 }
